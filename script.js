@@ -1,100 +1,101 @@
-const num = 3;
-//score tracker
 let humanScore = 0;
 let computerScore = 0;
-//when round is played this variables will store computer's
-//and user's selection
+const playerScore = document.getElementById('playerScore');
+const compScore = document.getElementById('computerScore');
+const buttons = document.querySelectorAll('div button');
+const computerSelectionMsg = document.getElementById('computerSelectionMsg');
+const playerSelectionMsg = document.getElementById('playerSelectionMsg');
+const resultMessage = document.getElementById('resultMessage');
+const playAgainButton = document.getElementById('playAgainButton');
 
-let computerSelection;
-let humanSelection;
-
-//arguments for playGame function
-let cc = getComputerChoice(num);
-let hc = getHumanChoice();
-
-
-function getComputerChoice(num) {
-	let computerChoice = Math.floor(Math.random() * num);
+function getComputerChoice() {
+	let computerChoice = Math.floor(Math.random() * 3);
 	if (computerChoice === 0) {
 		computerSelection = 'rock'
 	}
 	else if (computerChoice === 1) {
 		computerSelection = 'paper'
 	}
-	else{computerSelection = 'scissors'}
+	else{computerSelection = 'scissors'
+	}
+	return computerSelection;
 }
 
-function getHumanChoice(){
-	let humanChoice = prompt("Please enter Rock, Paper, or Scissors");
-	    while (humanChoice.toLowerCase() !== "rock"
-	    	&& humanChoice.toLowerCase() !== "paper"
-	    	&& humanChoice.toLowerCase() !== "scissors") {
-	        alert("Wrong input, you idiot!");
-	        humanChoice = prompt("Please enter Rock, Paper, or Scissors");
-	    }
-	    humanSelection = humanChoice;
-}
-
-function playRound(hc, cc){
-	if (computerSelection === 'rock' && humanSelection.toLowerCase() === 'rock' ||
-		computerSelection === 'paper' && humanSelection.toLowerCase() === 'paper' ||
-		computerSelection === 'scissors' && humanSelection.toLowerCase() === 'scissors')
-		{console.log('draw');}
-	else if (computerSelection === 'rock' && humanSelection.toLowerCase() === 'paper'){
-		console.log('You win');
+function playRound(humanSelection){
+	getComputerChoice();
+	computerSelectionMsg.innerText = (`Computer selected ${computerSelection}`);
+	playerSelectionMsg.innerText = (`You selected ${humanSelection}`);
+	if (computerSelection === 'rock' && humanSelection === 'rock' ||
+		computerSelection === 'paper' && humanSelection === 'paper' ||
+		computerSelection === 'scissors' && humanSelection === 'scissors')
+	{
+		resultMessage.innerText = 'Draw';
+	}
+	else if (computerSelection === 'rock' && humanSelection === 'paper' ||
+			 computerSelection === 'paper' && humanSelection === 'scissors' ||
+			 computerSelection === 'scissors' && humanSelection === 'rock')
+	{
+		resultMessage.innerText = 'You win';
 		humanScore++;
 	}
-	else if (computerSelection === 'rock' && humanSelection.toLowerCase() === 'scissors'){
-		console.log('Computer wins');
+	else {
+		resultMessage.innerText = 'Computer wins';
 		computerScore++;
-	}
-	else if (computerSelection === 'paper' && humanSelection.toLowerCase() === 'rock'){
-		console.log('Computer wins');
-		computerScore++;
-	}
-	else if (computerSelection === 'paper' && humanSelection.toLowerCase() === 'scissors'){
-		console.log('You win');
-		humanScore++;
-	}
-	else if (computerSelection === 'scissors' && humanSelection.toLowerCase() === 'paper') {
-		console.log('Computer wins');
-		computerScore++;
-	}
-	else {console.log('You win');humanScore++;}
+		}
+	console.log(humanScore, computerScore);
+	playerScore.innerText = humanScore;
+	compScore.innerText = computerScore;
+	checkGameEnd();
 }
 
-function resetRound(hc, cc){
-	if (humanScore === 5) {
-		console.log('===============');
-		console.log('GAME OVER - YOU WIN');
+function checkGameEnd() {
+	if(humanScore === 5 || computerScore === 5){
+		const winner = humanScore === 5 ? 'Player' : 'Computer';
+		resultMessage.innerText = `${winner} wins the game`;
+		disableButtons();
+		playAgainButton.style.display = 'block';
 	}
-	else if (computerScore === 5) {
-		console.log('===============');
-		console.log('GAME OVER - COMPUTER WINS');
-	}
-	else{
-		cc = getComputerChoice(num);
-		hc = getHumanChoice();
-	}
-
 }
 
-function playGame() {
-	while (humanScore < 5 && computerScore < 5){
-		playRound();
-		console.log(`You selected ${humanSelection}`);
-		console.log(`Computer selected ${computerSelection}`);
-		console.log(`Your score: ${humanScore} / Computer score: ${computerScore}`);
-		resetRound();
-		console.log('---------------------------');
-	}
-
+function disableButtons() {
+	buttons.forEach(button => button.disabled = true);
 }
 
-playGame();
-// console.log(`You selected ${humanSelection}`);
-// console.log(`Computer selected ${computerSelection}`);
-// console.log(`Your score: ${humanScore} / Computer score: ${computerScore}`);
+function resetGame(){
+	humanScore = 0;
+	computerScore = 0;
+	computerSelectionMsg.innerText = '';
+	playerSelectionMsg.innerText = '';
+	playerScore.innerText = humanScore;
+	compScore.innerText = computerScore;
+	resultMessage.innerText = '';
+	buttons.forEach(button => button.disabled = false);
+	playAgainButton.style.display = 'none';
+}
+
+buttons.forEach(button => {
+	button.addEventListener('click', (e) => {
+		let target = e.target;
+		switch(target.id) {
+			case 'rock':
+				playRound('rock');
+
+				break;
+			case 'paper':
+				playRound('paper');
+
+				break;
+			case 'scissors':
+				playRound('scissors');
+
+				break;
+		}
+	})
+})
+
+playAgainButton.addEventListener('click', resetGame);
+
+
 
 
 
